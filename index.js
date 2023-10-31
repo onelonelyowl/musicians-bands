@@ -1,7 +1,8 @@
 const { Band } = require('./models/Band')
 const { Musician } = require('./models/Musician')
 const { Song } = require("./models/Song")
-// Define associations here
+// const { bandSeeds, musicianSeeds, songSeeds} = require ('./seeddata.js')
+
 
 
 

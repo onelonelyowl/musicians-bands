@@ -1,7 +1,9 @@
-const {Sequelize, sequelize} = require('../db');
+const {Sequelize, db} = require('../db');
 
-// TODO - define the Band model
-let Band;
+const Band = db.define("Band", {
+    name: Sequelize.DataTypes.STRING,
+    genre: Sequelize.DataTypes.STRING
+});
 
 module.exports = {
     Band
