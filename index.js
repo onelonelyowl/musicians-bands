@@ -1,6 +1,7 @@
 const { Band } = require('./models/Band')
 const { Musician } = require('./models/Musician')
 const { Song } = require("./models/Song")
+const { Manager } = require("./models/Manager")
 const { seedBands, seedMusicians, seedSongs} = require ('./seeddata.js')
 /*
 async function xd(){
@@ -31,10 +32,20 @@ async function xd(){
 }
 xd()
 */
+Band.hasMany(Musician)
+Musician.belongsTo(Band)
+
+Song.belongsToMany(Band, { through: "song-band" })
+Band.belongsToMany(Song, { through: "song-band" })
+
+Manager.hasOne(Band)
+Band.belongsTo(Manager)
+
 module.exports = {
     Band,
     Musician,
     Song,
+    Manager,
     seedBands,
     seedMusicians,
     seedSongs

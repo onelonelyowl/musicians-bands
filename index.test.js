@@ -1,5 +1,5 @@
 const { db } = require('./db');
-const { Band, Musician, Song, seedBands, seedMusicians, seedSongs } = require('./index')
+const { Band, Musician, Song, Manager, seedBands, seedMusicians, seedSongs } = require('./index')
 
 describe('Band, Musician, and Song Models', () => {
     /**
@@ -101,5 +101,42 @@ describe('Band, Musician, and Song Models', () => {
             year: 2017,
             length: 543,
           }))
+    });
+    test('checking band to musician association', async () => {
+        const flatlander = await Musician.create({name: "Flatlander", instrument: "Synth"})
+        const zach = await Musician.create({name: "Zach Hill", instrument: "Drums"})
+        const mcride = await Musician.create({name: "MC Ride", instrument: "Vocals"})
+        const dg = await Band.findOne({where: {name: "Death Grips"}})
+        await dg.addMusicians([flatlander, zach, mcride])
+        expect(flatlander.getBand()).not.toBeNull() // if this runs it means that it was added ok
+    });
+    test('checking band-song association', async () => {
+        const dg = await Band.findOne({where: {name: "Death Grips"}})
+        const opn = await Band.create({name: "Oneohtrix Point Never", genre: "minimal electronic", showCount: 2})
+        const chromecounty = await Song.findOne({where: {title: "Chrome County"}})
+        const silver = await Song.findOne({where: {title: "Silver"}})
+        const khmlwugh = await Song.findOne({where: {title: "Khmlwugh"}})
+        await dg.addSongs([chromecounty, silver])
+        await opn.addSongs([chromecounty, khmlwugh])
+        const ccOwners = await chromecounty.getBands()
+        expect(ccOwners.length).toBe(2)
+    });
+    test('checking song-band association', async () => {
+        const dg = await Band.findOne({where: {name: "Death Grips"}})
+        const opn = await Band.findOne({where: {name: "Oneohtrix Point Never"}})
+        const chromecounty = await Song.findOne({where: {title: "Chrome County"}})
+        const silver = await Song.findOne({where: {title: "Silver"}})
+        const khmlwugh = await Song.findOne({where: {title: "Khmlwugh"}})
+        // await dg.addSongs([chromecounty, silver])
+        // await opn.addSongs([chromecounty, khmlwugh])
+        const opnSongs = await opn.getSongs()
+        expect(opnSongs.length).toBe(2)
+    });
+    test('checking a manager can be assigned to a band', async () => {
+        const gog = await Manager.create({name: "Gog", email: "me@mymail.com", salary: 4, dateHired: "2022-06-23"})
+        const dg = await Band.findOne({where: {name: "Death Grips"}})
+        await dg.setManager(gog)
+        const dgManager = await dg.getManager()
+        expect(dgManager).toHaveProperty("email")
     });
 })
